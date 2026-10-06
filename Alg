@@ -1,0 +1,91 @@
+
+
+1. Campus Navigation using A*
+
+1. Create a weighted campus graph with locations and path costs.
+
+
+2. Assign heuristic values to each location.
+
+
+3. Start A* search from the Main Gate.
+
+
+4. Calculate path cost using distance, crowd level, and heuristic value.
+
+
+5. Select the minimum-cost route and display alternative routes.
+
+
+
+2. Customer Segmentation using K-Means
+
+1. Collect customer data such as income, frequency, spending score, and order value.
+
+
+2. Scale the customer features for clustering.
+
+
+3. Use the Elbow Method to find the suitable number of clusters.
+
+
+4. Apply K-Means and assign customers to clusters.
+
+
+5. Display centroids and interpret each customer segment.
+
+
+
+3. Machine Fault Diagnosis using Forward Chaining
+
+1. Store machine symptoms and IF-THEN rules in the knowledge base.
+
+
+2. Accept the observed symptoms from the user.
+
+
+3. Match the symptoms with the available rules.
+
+
+4. Apply forward chaining to derive the possible fault.
+
+
+5. Display the diagnosis, maintenance action, and rules used.
+
+
+
+4. Student Academic Risk using ANN
+
+1. Collect student academic features and risk labels.
+
+
+2. Preprocess the data and split it into training and testing sets.
+
+
+3. Train an ANN/MLP model using the training data.
+
+
+4. Evaluate the model using accuracy, precision, recall, and F1-score.
+
+
+5. Give the risk prediction for a new student.
+
+
+
+5. Weather Prediction using Bayesian Network + HMM
+
+1. Collect temperature, humidity, cloud, and rainfall observations.
+
+
+2. Calculate rain probability using Bayesian inference.
+
+
+3. Define HMM states and transition probabilities.
+
+
+4. Apply the Viterbi algorithm to find the most probable state sequence.
+
+
+5. Display the probability, state sequence, and final weather prediction.
+
+
