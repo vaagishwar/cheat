@@ -1,50 +1,152 @@
+```html
 <!DOCTYPE html>
-<html>
-<head><title>Customer Portal</title></head>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Customer Service Portal</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;padding:35px 16px;
+  font-family:Arial,sans-serif;color:#111;
+  background:white;line-height:1.5
+}
+.container{
+  max-width:850px;margin:auto;
+  border:1px solid #bbb;border-radius:12px;
+  padding:28px
+}
+h1{font-size:25px;text-align:center;margin:0 0 8px}
+.subtitle{text-align:center;color:#555;margin:0 0 25px}
+.form-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:18px
+}
+label{display:block;font-size:14px;font-weight:bold;margin-bottom:7px}
+input{
+  width:100%;padding:11px;
+  border:1px solid #aaa;border-radius:6px;
+  font:inherit;background:white;color:#111
+}
+input:focus{outline:2px solid #555;outline-offset:1px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+button{
+  padding:10px 16px;border:1px solid #555;
+  border-radius:6px;background:white;color:#111;
+  font-weight:600;cursor:pointer
+}
+button:hover{outline:1px solid #111}
+.output{
+  margin-top:25px;padding:18px;
+  border:1px solid #bbb;border-radius:8px
+}
+.output h2{font-size:18px;margin:0 0 12px}
+#msg{margin:0 0 14px;overflow-wrap:anywhere}
+.table-wrap{width:100%;overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:500px}
+th,td{padding:11px 12px;border:1px solid #bbb;text-align:left}
+th{font-size:14px}
+td{font-size:14px;overflow-wrap:anywhere}
+@media(max-width:550px){
+ .container{padding:18px}
+ .form-grid{grid-template-columns:1fr;gap:12px}
+ .actions button{flex:1 1 40%}
+}
+</style>
+</head>
 <body>
-<h2>Customer Service Portal</h2>
-ID: <input id="cid" type="number"><br><br>
-Name: <input id="name"><br><br>
-Email: <input id="email"><br><br>
-Phone: <input id="phone"><br><br>
-<button onclick="add()">Add</button>
-<button onclick="view()">View All</button>
-<button onclick="update()">Update</button>
-<button onclick="removeCustomer()">Delete</button>
-<p id="msg"></p>
-<div id="out"></div>
-<script>
-let customers=[];
-let nextId=1;
+<div class="container">
+<h1>Customer Service Portal</h1>
+<p class="subtitle">Customer Registration and Management</p>
 
+<div class="form-grid">
+<div>
+<label for="cid">Customer ID</label>
+<input id="cid" type="number" placeholder="Auto-generated">
+</div>
+<div>
+<label for="name">Customer Name</label>
+<input id="name" value="Arun Kumar">
+</div>
+<div>
+<label for="email">Email Address</label>
+<input id="email" type="email" value="arun@gmail.com">
+</div>
+<div>
+<label for="phone">Phone Number</label>
+<input id="phone" type="tel" value="9876543210">
+</div>
+</div>
+
+<div class="actions">
+<button onclick="add()">Add Customer</button>
+<button onclick="view()">View All</button>
+<button onclick="update()">Update Customer</button>
+<button onclick="removeCustomer()">Delete Customer</button>
+<button onclick="clearForm()">Clear Form</button>
+</div>
+
+<div class="output" aria-live="polite">
+<h2>Customer Records</h2>
+<p id="msg">Enter details and select an operation.</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th></tr></thead>
+<tbody id="out"></tbody>
+</table>
+</div>
+</div>
+</div>
+<script>
+let customers=[],nextId=1;
+
+function render(){
+ out.replaceChildren();
+ customers.forEach(c=>{
+  let tr=document.createElement("tr");
+  [c.id,c.name,c.email,c.phone].forEach(v=>{
+   let td=document.createElement("td");
+   td.textContent=v;
+   tr.appendChild(td);
+  });
+  out.appendChild(tr);
+ });
+}
 function add(){
- if(!name.value.trim()||!email.value.includes("@")){
- msg.textContent="Enter valid name and email";return;
- }
- customers.push({id:nextId++,name:name.value,
- email:email.value,phone:phone.value});
- msg.textContent="Customer added successfully";
- view();
+ if(!name.value.trim()||!email.validity.valid||!email.value.trim())
+  return msg.textContent="Error: Enter a valid name and email";
+ let c={id:nextId++,name:name.value.trim(),
+ email:email.value.trim(),phone:phone.value.trim()};
+ customers.push(c);cid.value=c.id;
+ msg.textContent="Customer added successfully. ID: "+c.id;
+ render();
 }
 function view(){
- out.innerHTML=customers.map(c=>
- c.id+" | "+c.name+" | "+c.email+" | "+c.phone
- ).join("<br>")||"No customers";
+ render();
+ msg.textContent=customers.length+" customer(s) found.";
 }
 function update(){
  let c=customers.find(c=>c.id==cid.value);
- if(!c){msg.textContent="Customer not found";return;}
- c.name=name.value;c.email=email.value;c.phone=phone.value;
- msg.textContent="Customer updated successfully";
- view();
+ if(!c)return msg.textContent="Error: Customer not found";
+ if(!name.value.trim()||!email.validity.valid||!email.value.trim())
+  return msg.textContent="Error: Enter valid customer details";
+ c.name=name.value.trim();c.email=email.value.trim();
+ c.phone=phone.value.trim();
+ msg.textContent="Customer updated successfully.";
+ render();
 }
 function removeCustomer(){
  let i=customers.findIndex(c=>c.id==cid.value);
- if(i<0){msg.textContent="Customer not found";return;}
+ if(i<0)return msg.textContent="Error: Customer not found";
  customers.splice(i,1);
- msg.textContent="Customer deleted successfully";
- view();
+ msg.textContent="Customer deleted successfully.";
+ render();
+}
+function clearForm(){
+ cid.value="";name.value="";email.value="";phone.value="";
+ msg.textContent="Form cleared.";
 }
 </script>
 </body>
 </html>
+```
