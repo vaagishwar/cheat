@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head><title>Integrated Bank</title></head>
+<body>
+<h2>Integrated Bank Application</h2>
+Account ID: <input id="id" value="101"><br><br>
+PIN: <input id="pin" type="password"><br><br>
+Amount: <input id="amount" type="number"><br><br>
+<button onclick="login()">Login</button>
+<button onclick="profile()">Profile</button>
+<button onclick="balance()">Balance</button>
+<button onclick="transact('Deposit')">Deposit</button>
+<button onclick="transact('Withdraw')">Withdraw</button><br><br>
+New PIN: <input id="newpin" type="password">
+<button onclick="changePin()">Change PIN</button><br><br>
+<button onclick="history()">Transactions</button>
+<button onclick="addAccount()">Add Account</button>
+<button onclick="deleteAccount()">Delete Account</button>
+<button onclick="contact()">Contact Us</button>
+<button onclick="logout()">Logout</button>
+<p id="msg"></p>
+<div id="out"></div>
+<script>
+let accounts=[{id:101,name:"Arun",pin:"1234",balance:5000}];
+let transactions=[];
+let logged=null;
+
+function account(){
+ return accounts.find(a=>a.id==id.value);
+}
+function login(){
+ let a=account();
+ if(a&&a.pin===pin.value){
+ logged=a;msg.textContent="Login successful";
+ }else{logged=null;msg.textContent="Invalid account or PIN";}
+}
+function profile(){
+ if(!logged)return msg.textContent="Login first";
+ msg.textContent="Name: "+logged.name+" | ID: "+logged.id;
+}
+function balance(){
+ if(!logged)return msg.textContent="Login first";
+ msg.textContent="Balance: ₹"+logged.balance;
+}
+function transact(type){
+ if(!logged)return msg.textContent="Login first";
+ let a=Number(amount.value);
+ if(a<=0)return msg.textContent="Invalid amount";
+ if(type==="Withdraw"&&a>logged.balance)
+ return msg.textContent="Insufficient balance";
+ logged.balance+=type==="Deposit"?a:-a;
+ transactions.push({id:logged.id,type,amount:a});
+ msg.textContent=type+" successful. Balance: ₹"+logged.balance;
+}
+function changePin(){
+ if(!logged)return msg.textContent="Login first";
+ if(newpin.value.length!==4)
+ return msg.textContent="PIN must contain 4 digits";
+ logged.pin=newpin.value;pin.value=newpin.value;
+ msg.textContent="PIN changed successfully";
+}
+function history(){
+ if(!logged)return msg.textContent="Login first";
+ out.innerHTML=transactions.filter(t=>t.id===logged.id)
+ .map(t=>t.type+" ₹"+t.amount).join("<br>")||"No transactions";
+}
+function addAccount(){
+ let n=Number(prompt("Enter new account ID"));
+ if(!n||accounts.some(a=>a.id===n))
+ return msg.textContent="Invalid or existing ID";
+ accounts.push({id:n,name:prompt("Enter customer name")||"Customer",
+ pin:"1234",balance:0});
+ msg.textContent="Account created. Default PIN: 1234";
+}
+function deleteAccount(){
+ if(!logged)return msg.textContent="Login first";
+ accounts=accounts.filter(a=>a.id!==logged.id);
+ logged=null;msg.textContent="Account deleted";
+}
+function contact(){
+ msg.textContent="Contact: support@bank.com";
+}
+function logout(){
+ logged=null;pin.value="";msg.textContent="Logged out";
+}
+</script>
+</body>
+</html>
