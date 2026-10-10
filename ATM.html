@@ -1,79 +1,132 @@
-
+```html
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>ATM Management</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ATM Transaction Management</title>
 <style>
 *{box-sizing:border-box}
-body{font-family:Arial;margin:0;padding:35px}
-main{max-width:500px;margin:auto;border:1px solid;padding:25px}
-h2{text-align:center;margin:0 0 25px}
-label{display:block;margin:14px 0 6px}
-input,select{width:100%;padding:10px;border:1px solid}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
-button{padding:10px;cursor:pointer}
-.result{border:1px solid;padding:15px;margin-top:20px;min-height:65px}
-h3{margin-top:0}
+body{
+  margin:0;padding:35px 16px;
+  font-family:Arial,sans-serif;color:#111;
+  background:white;line-height:1.5
+}
+.container{
+  max-width:520px;margin:auto;
+  border:1px solid #bbb;border-radius:12px;
+  padding:28px
+}
+h1{font-size:25px;text-align:center;margin:0 0 8px}
+.subtitle{text-align:center;margin:0 0 25px;color:#555}
+label{display:block;font-size:14px;font-weight:bold;margin:16px 0 6px}
+input{
+  width:100%;padding:11px 12px;
+  border:1px solid #aaa;border-radius:6px;
+  font:inherit;background:white;color:#111
+}
+input:focus{outline:2px solid #555;outline-offset:1px}
+.actions{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:10px;margin-top:22px
+}
+button{
+  padding:11px 8px;border:1px solid #555;
+  border-radius:6px;background:white;color:#111;
+  font-weight:600;cursor:pointer
+}
+button:hover{outline:1px solid #111}
+.output{
+  margin-top:24px;border:1px solid #bbb;
+  border-radius:8px;padding:16px;min-height:100px;
+  overflow-wrap:anywhere
+}
+.output h2{font-size:17px;margin:0 0 10px}
+#msg{margin:0;font-weight:500}
+#out{margin-top:10px;font-size:14px}
+@media(max-width:380px){
+  .container{padding:18px}
+  .actions{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
-<main>
-<h2>ATM Transaction Management</h2>
-<label>Account ID</label>
+<div class="container">
+<h1>ATM Management</h1>
+<p class="subtitle">Transaction and Account Services</p>
+
+<label for="id">Account ID</label>
 <input id="id" value="101">
-<label>PIN</label>
+
+<label for="pin">ATM PIN</label>
 <input id="pin" type="password" value="1234">
-<label>Transaction Amount (₹)</label>
-<input id="amount" type="number" value="500">
+
+<label for="amount">Amount (₹)</label>
+<input id="amount" type="number" min="1" value="500">
+
 <div class="actions">
 <button onclick="balance()">Balance Enquiry</button>
 <button onclick="transact('Deposit')">Deposit</button>
 <button onclick="transact('Withdraw')">Withdraw</button>
 <button onclick="changePin()">Change PIN</button>
 <button onclick="history()">Transaction History</button>
-<button onclick="resetForm()">Reset</button>
+<button onclick="resetForm()">Reset Form</button>
 </div>
-<section class="result">
-<h3>Output</h3>
+
+<div class="output" aria-live="polite">
+<h2>Transaction Output</h2>
 <p id="msg">Welcome! Select an operation.</p>
 <div id="out"></div>
-</section>
-</main>
+</div>
+</div>
 <script>
 let account={id:101,pin:"1234",balance:5000};
 let transactions=[];
+
 function valid(){
-if(id.value!=account.id||pin.value!==account.pin){
-msg.textContent="Error: Invalid account or PIN";return false}
-return true}
+ if(id.value!=account.id||pin.value!==account.pin){
+  msg.textContent="Error: Invalid account or PIN";
+  return false;
+ }
+ return true;
+}
 function balance(){
-if(valid())msg.textContent="Available Balance: ₹"+account.balance.toFixed(2)}
+ if(valid())msg.textContent="Available Balance: ₹"+account.balance.toFixed(2);
+}
 function transact(type){
-if(!valid())return;
-let n=Number(amount.value);
-if(n<=0)return msg.textContent="Error: Enter a valid amount";
-if(type==="Withdraw"&&n>account.balance)
-return msg.textContent="Error: Insufficient balance";
-account.balance+=type==="Deposit"?n:-n;
-transactions.push({type,amount:n,balance:account.balance});
-msg.textContent=type+" successful. Remaining Balance: ₹"+account.balance.toFixed(2)}
+ if(!valid())return;
+ let n=Number(amount.value);
+ if(!Number.isFinite(n)||n<=0)
+  return msg.textContent="Error: Enter a valid amount";
+ if(type==="Withdraw"&&n>account.balance)
+  return msg.textContent="Error: Insufficient balance";
+ account.balance+=type==="Deposit"?n:-n;
+ transactions.push({type,amount:n,balance:account.balance});
+ msg.textContent=type+" successful. Balance: ₹"+account.balance.toFixed(2);
+}
 function changePin(){
-if(!valid())return;
-let p=prompt("Enter new 4-digit PIN");
-if(!p||!/^\d{4}$/.test(p))
-return msg.textContent="Error: PIN must contain 4 digits";
-account.pin=p;pin.value=p;msg.textContent="PIN changed successfully"}
+ if(!valid())return;
+ let p=prompt("Enter new 4-digit PIN");
+ if(!p||!/^\d{4}$/.test(p))
+  return msg.textContent="Error: PIN must contain 4 digits";
+ account.pin=p;pin.value=p;
+ msg.textContent="PIN changed successfully";
+}
 function history(){
-if(!valid())return;
-out.replaceChildren();
-transactions.forEach(t=>{
-let p=document.createElement("p");
-p.textContent=t.type+" | ₹"+t.amount+" | Balance: ₹"+t.balance;
-out.appendChild(p)});
-if(!transactions.length)out.textContent="No transactions available"}
+ if(!valid())return;
+ out.replaceChildren();
+ transactions.forEach(t=>{
+  let p=document.createElement("p");
+  p.textContent=t.type+" | ₹"+t.amount+" | Balance: ₹"+t.balance.toFixed(2);
+  out.appendChild(p);
+ });
+ if(!transactions.length)out.textContent="No transactions available";
+}
 function resetForm(){
-id.value=101;pin.value="1234";amount.value=500;
-msg.textContent="Form reset";out.replaceChildren()}
+ id.value="101";pin.value="1234";amount.value="500";
+ msg.textContent="Form reset successfully";out.replaceChildren();
+}
 </script>
 </body>
 </html>
+```
