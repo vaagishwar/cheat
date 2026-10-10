@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head><title>ATM Management</title></head>
+<body>
+<h2>ATM Transaction Management</h2>
+Account ID: <input id="id" value="101"><br><br>
+PIN: <input id="pin" type="password"><br><br>
+Amount: <input id="amount" type="number"><br><br>
+<button onclick="balance()">Balance</button>
+<button onclick="transact('Deposit')">Deposit</button>
+<button onclick="transact('Withdraw')">Withdraw</button>
+<button onclick="changePin()">Change PIN</button>
+<button onclick="history()">Transactions</button>
+<p id="msg"></p>
+<div id="out"></div>
+<script>
+let account={id:101,pin:"1234",balance:5000};
+let transactions=[];
+
+function valid(){
+ if(id.value!=account.id||pin.value!==account.pin){
+ msg.textContent="Invalid account or PIN";
+ return false;
+ }
+ return true;
+}
+function balance(){
+ if(valid()) msg.textContent="Balance: ₹"+account.balance;
+}
+function transact(type){
+ if(!valid()) return;
+ let a=Number(amount.value);
+ if(a<=0){msg.textContent="Enter valid amount";return;}
+ if(type==="Withdraw"&&a>account.balance){
+ msg.textContent="Insufficient balance";return;
+ }
+ account.balance+=type==="Deposit"?a:-a;
+ transactions.push(type+" : ₹"+a);
+ msg.textContent=type+" successful. Balance: ₹"+account.balance;
+}
+function changePin(){
+ if(!valid())return;
+ let p=prompt("Enter new PIN");
+ if(p&&p.length===4){
+ account.pin=p;pin.value=p;
+ msg.textContent="PIN changed successfully";
+ }else msg.textContent="Enter a 4-digit PIN";
+}
+function history(){
+ if(!valid())return;
+ out.innerHTML=transactions.join("<br>")||"No transactions";
+}
+</script>
+</body>
+</html>
