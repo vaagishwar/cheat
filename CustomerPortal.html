@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head><title>Customer Portal</title></head>
+<body>
+<h2>Customer Service Portal</h2>
+ID: <input id="cid" type="number"><br><br>
+Name: <input id="name"><br><br>
+Email: <input id="email"><br><br>
+Phone: <input id="phone"><br><br>
+<button onclick="add()">Add</button>
+<button onclick="view()">View All</button>
+<button onclick="update()">Update</button>
+<button onclick="removeCustomer()">Delete</button>
+<p id="msg"></p>
+<div id="out"></div>
+<script>
+let customers=[];
+let nextId=1;
+
+function add(){
+ if(!name.value.trim()||!email.value.includes("@")){
+ msg.textContent="Enter valid name and email";return;
+ }
+ customers.push({id:nextId++,name:name.value,
+ email:email.value,phone:phone.value});
+ msg.textContent="Customer added successfully";
+ view();
+}
+function view(){
+ out.innerHTML=customers.map(c=>
+ c.id+" | "+c.name+" | "+c.email+" | "+c.phone
+ ).join("<br>")||"No customers";
+}
+function update(){
+ let c=customers.find(c=>c.id==cid.value);
+ if(!c){msg.textContent="Customer not found";return;}
+ c.name=name.value;c.email=email.value;c.phone=phone.value;
+ msg.textContent="Customer updated successfully";
+ view();
+}
+function removeCustomer(){
+ let i=customers.findIndex(c=>c.id==cid.value);
+ if(i<0){msg.textContent="Customer not found";return;}
+ customers.splice(i,1);
+ msg.textContent="Customer deleted successfully";
+ view();
+}
+</script>
+</body>
+</html>
