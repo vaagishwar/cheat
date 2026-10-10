@@ -1,14 +1,19 @@
+
 <!DOCTYPE html>
 <html>
 <head>
 <title>ATM Management</title>
 <style>
-body{font-family:Arial;margin:30px}
-main{max-width:450px;margin:auto;border:1px solid;padding:20px}
-input,button{padding:8px;margin:5px}
-input{width:90%;box-sizing:border-box}
-button{cursor:pointer}
-#msg{margin-top:15px}
+*{box-sizing:border-box}
+body{font-family:Arial;margin:0;padding:35px}
+main{max-width:500px;margin:auto;border:1px solid;padding:25px}
+h2{text-align:center;margin:0 0 25px}
+label{display:block;margin:14px 0 6px}
+input,select{width:100%;padding:10px;border:1px solid}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+button{padding:10px;cursor:pointer}
+.result{border:1px solid;padding:15px;margin-top:20px;min-height:65px}
+h3{margin-top:0}
 </style>
 </head>
 <body>
@@ -17,54 +22,58 @@ button{cursor:pointer}
 <label>Account ID</label>
 <input id="id" value="101">
 <label>PIN</label>
-<input id="pin" type="password">
-<label>Amount</label>
-<input id="amount" type="number">
+<input id="pin" type="password" value="1234">
+<label>Transaction Amount (₹)</label>
+<input id="amount" type="number" value="500">
+<div class="actions">
 <button onclick="balance()">Balance Enquiry</button>
 <button onclick="transact('Deposit')">Deposit</button>
 <button onclick="transact('Withdraw')">Withdraw</button>
 <button onclick="changePin()">Change PIN</button>
-<button onclick="history()">Transactions</button>
-<p id="msg">Welcome</p>
+<button onclick="history()">Transaction History</button>
+<button onclick="resetForm()">Reset</button>
+</div>
+<section class="result">
+<h3>Output</h3>
+<p id="msg">Welcome! Select an operation.</p>
 <div id="out"></div>
+</section>
 </main>
 <script>
 let account={id:101,pin:"1234",balance:5000};
 let transactions=[];
 function valid(){
- if(id.value!=account.id||pin.value!==account.pin){
- msg.textContent="Invalid account or PIN";return false;
- }return true;
-}
+if(id.value!=account.id||pin.value!==account.pin){
+msg.textContent="Error: Invalid account or PIN";return false}
+return true}
 function balance(){
- if(valid())msg.textContent="Balance: ₹"+account.balance;
-}
+if(valid())msg.textContent="Available Balance: ₹"+account.balance.toFixed(2)}
 function transact(type){
- if(!valid())return;
- let a=Number(amount.value);
- if(a<=0)return msg.textContent="Enter valid amount";
- if(type==="Withdraw"&&a>account.balance)
- return msg.textContent="Insufficient balance";
- account.balance+=type==="Deposit"?a:-a;
- transactions.push(type+" - ₹"+a);
- msg.textContent=type+" successful. Balance: ₹"+account.balance;
-}
+if(!valid())return;
+let n=Number(amount.value);
+if(n<=0)return msg.textContent="Error: Enter a valid amount";
+if(type==="Withdraw"&&n>account.balance)
+return msg.textContent="Error: Insufficient balance";
+account.balance+=type==="Deposit"?n:-n;
+transactions.push({type,amount:n,balance:account.balance});
+msg.textContent=type+" successful. Remaining Balance: ₹"+account.balance.toFixed(2)}
 function changePin(){
- if(!valid())return;
- let p=prompt("Enter new 4-digit PIN");
- if(p&&/^\d{4}$/.test(p)){
- account.pin=p;pin.value=p;
- msg.textContent="PIN changed successfully";
- }else msg.textContent="Invalid PIN";
-}
+if(!valid())return;
+let p=prompt("Enter new 4-digit PIN");
+if(!p||!/^\d{4}$/.test(p))
+return msg.textContent="Error: PIN must contain 4 digits";
+account.pin=p;pin.value=p;msg.textContent="PIN changed successfully"}
 function history(){
- if(!valid())return;
- out.replaceChildren();
- transactions.forEach(t=>{
- let p=document.createElement("p");p.textContent=t;out.appendChild(p);
- });
- if(!transactions.length)out.textContent="No transactions";
-}
+if(!valid())return;
+out.replaceChildren();
+transactions.forEach(t=>{
+let p=document.createElement("p");
+p.textContent=t.type+" | ₹"+t.amount+" | Balance: ₹"+t.balance;
+out.appendChild(p)});
+if(!transactions.length)out.textContent="No transactions available"}
+function resetForm(){
+id.value=101;pin.value="1234";amount.value=500;
+msg.textContent="Form reset";out.replaceChildren()}
 </script>
 </body>
 </html>
